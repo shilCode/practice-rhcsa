@@ -2,19 +2,20 @@
 #
 # extract-questions.sh - Generate questions-only copies of every practice test.
 #
-# Reads each practice-test-*.md and writes a stripped copy (Task + Aspects only,
-# no answers/explanations) into ./questions/ so you can self-test, configure the
-# system, then grade yourself with ./rhcsa-validator.sh.
+# Reads each answers/practice-test-*.md and writes a stripped copy (Task +
+# Aspects only, no answers/explanations) into ./questions/ so you can self-test,
+# configure the system, then grade yourself with ./rhcsa-validator.sh.
 #
 # Usage:  ./extract-questions.sh
 
 set -euo pipefail
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SRC="$DIR/answers"
 OUT="$DIR/questions"
 mkdir -p "$OUT"
 
-for src in "$DIR"/practice-test-*.md; do
+for src in "$SRC"/practice-test-*.md; do
     base="$(basename "$src")"
     name="${base#practice-test-}"; name="${name%.md}"
     {
