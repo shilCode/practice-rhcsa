@@ -23,7 +23,6 @@ Overall explanation
 
 `/sysroot` must be writable before `passwd`; `/.autorelabel` fixes SELinux contexts on the next boot.
 
-
 **Question 2**
 
 **Task:** Configure a local DNF repository on **Server10** from `/RHEL-10.iso` mounted at `/mnt/repo10`, exposing **BaseOS** and **AppStream** with GPG checking **enabled** (import the key from the media).
@@ -44,7 +43,6 @@ Overall explanation
 **Explanation**
 
 `gpgcheck=1` with a valid `gpgkey` verifies package signatures — the secure, production-correct configuration.
-
 
 **Question 3**
 
@@ -69,7 +67,6 @@ Overall explanation
 
 Both `manual` methods disable automatic addressing; the profile persists the static IPv4 and IPv6 configuration.
 
-
 **Question 4**
 
 **Task:** On **Server10**, set the timezone to **Australia/Sydney** and enable `chronyd`.
@@ -89,7 +86,6 @@ Overall explanation
 
 `timedatectl` persists the timezone; `chronyd` synchronizes and starts at boot.
 
-
 **Question 5**
 
 **Task:** On **Server10**, enable **IPv4 and IPv6 packet forwarding** and make both settings persistent.
@@ -103,14 +99,13 @@ Overall explanation
 **Correct Answer:**
 
 1. Create `/etc/sysctl.d/99-forward.conf`:
-    1. net.ipv4.ip_forward = 1
-    2. net.ipv6.conf.all.forwarding = 1
+   1. net.ipv4.ip_forward = 1
+   2. net.ipv6.conf.all.forwarding = 1
 2. sysctl -p /etc/sysctl.d/99-forward.conf
 
 **Explanation**
 
 Dropping the parameters into `/etc/sysctl.d/` makes them persist; `sysctl -p` applies them immediately.
-
 
 **Question 6**
 
@@ -135,7 +130,6 @@ Overall explanation
 
 `-s 16M` sets the PE size; `-l 50` requests 50 extents (50 × 16 MiB = 800 MiB). The fstab entry persists the mount.
 
-
 **Question 7**
 
 **Task:** On **Server10**, create a systemd **timer** `cleanup10` that runs `/usr/local/bin/cleanup10.sh` at **16:15** daily.
@@ -151,16 +145,15 @@ Overall explanation
 1. Create `/usr/local/bin/cleanup10.sh` (executable).
 2. `/etc/systemd/system/cleanup10.service` → `ExecStart=/usr/local/bin/cleanup10.sh`.
 3. `/etc/systemd/system/cleanup10.timer`:
-    1. [Timer]
-    2. OnCalendar=*-*-* 16:15:00
-    3. [Install]
-    4. WantedBy=timers.target
+   1. [Timer]
+   2. OnCalendar=_-_-\* 16:15:00
+   3. [Install]
+   4. WantedBy=timers.target
 4. systemctl daemon-reload && systemctl enable --now cleanup10.timer
 
 **Explanation**
 
 `OnCalendar=*-*-* 16:15:00` schedules a daily 16:15 run; enabling ties the timer to `timers.target`.
-
 
 **Question 8**
 
@@ -183,7 +176,6 @@ Overall explanation
 
 Adding both services permanently and reloading opens ports 80 and 443 across reboots.
 
-
 **Question 9**
 
 **Task:** On **Server10**, find all files under `/etc` with permissions `777` and list them in `/root/world10.txt`.
@@ -202,7 +194,6 @@ Overall explanation
 
 `-perm 0777` matches files with exactly those permission bits; `>` records the list.
 
-
 **Question 10**
 
 **Task:** On **Server10**, set the GRUB **timeout** to **10** seconds and regenerate the config.
@@ -215,13 +206,12 @@ Overall explanation
 
 **Correct Answer:**
 
-1. sed -i 's/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=10/' /etc/default/grub
+1. sed -i 's/^GRUB_TIMEOUT=.\*/GRUB_TIMEOUT=10/' /etc/default/grub
 2. grub2-mkconfig -o /boot/grub2/grub.cfg
 
 **Explanation**
 
 `GRUB_TIMEOUT=10` sets the menu delay; regeneration writes it into the active config.
-
 
 **Question 11**
 
@@ -244,7 +234,6 @@ Then `chmod +x`.
 
 `${1^^}` upper-cases every character of the first argument using bash parameter expansion.
 
-
 **Question 12**
 
 **Task:** On **Server10**, add `/etc/skel/START10.txt`, set `PASS_MAX_DAYS` to **90**, `PASS_MIN_DAYS` to **2**.
@@ -258,13 +247,12 @@ Overall explanation
 **Correct Answer:**
 
 1. echo "start" > /etc/skel/START10.txt
-2. sed -i 's/^PASS_MAX_DAYS.*/PASS_MAX_DAYS 90/' /etc/login.defs
-3. sed -i 's/^PASS_MIN_DAYS.*/PASS_MIN_DAYS 2/' /etc/login.defs
+2. sed -i 's/^PASS_MAX_DAYS.\*/PASS_MAX_DAYS 90/' /etc/login.defs
+3. sed -i 's/^PASS_MIN_DAYS.\*/PASS_MIN_DAYS 2/' /etc/login.defs
 
 **Explanation**
 
 `login.defs` sets the default aging applied to newly created accounts.
-
 
 **Question 13**
 
@@ -288,7 +276,6 @@ Overall explanation
 
 `setfacl -d` sets a **default** ACL so files created later inherit `beta10:rx` access.
 
-
 **Question 14**
 
 **Task:** On **Server10**, create a bzip2 archive `/root/home10.tar.bz2` of `/home`, excluding any `*.tmp` files.
@@ -301,12 +288,11 @@ Overall explanation
 
 **Correct Answer:**
 
-1. tar cjf /root/home10.tar.bz2 --exclude='*.tmp' /home
+1. tar cjf /root/home10.tar.bz2 --exclude='\*.tmp' /home
 
 **Explanation**
 
 `--exclude='*.tmp'` skips matching files; `j` selects bzip2 compression.
-
 
 **Question 15**
 
@@ -322,14 +308,13 @@ Overall explanation
 
 1. lvcreate -L 1G -n swap10 vg10
 2. mkswap /dev/vg10/swap10
-3. blkid /dev/vg10/swap10   # note the UUID
+3. blkid /dev/vg10/swap10 # note the UUID
 4. echo "UUID=<uuid> none swap defaults 0 0" >> /etc/fstab
 5. swapon -a
 
 **Explanation**
 
 Referencing swap by UUID is robust against device-name changes; `swapon -a` activates all fstab swap.
-
 
 **Question 16**
 
@@ -351,7 +336,6 @@ Overall explanation
 
 Both directives in a drop-in file enforce key-based, non-root SSH access.
 
-
 **Question 17**
 
 **Task:** On **Server10**, apply the `tuned` **virtual-guest** profile.
@@ -371,7 +355,6 @@ Overall explanation
 
 `virtual-guest` optimizes a VM guest; `tuned-adm profile` persists the selection.
 
-
 **Question 18**
 
 **Task:** On **Server10**, mount an NFS export `nfs:/exports/shared10` persistently at `/mnt/shared10` with the `_netdev` option.
@@ -386,13 +369,12 @@ Overall explanation
 
 1. dnf install -y nfs-utils
 2. mkdir -p /mnt/shared10
-3. echo "nfs:/exports/shared10 /mnt/shared10 nfs _netdev 0 0" >> /etc/fstab
+3. echo "nfs:/exports/shared10 /mnt/shared10 nfs \_netdev 0 0" >> /etc/fstab
 4. mount -a
 
 **Explanation**
 
 `_netdev` ensures the mount waits for the network, avoiding boot delays/hangs.
-
 
 **Question 19**
 
@@ -407,12 +389,11 @@ Overall explanation
 **Correct Answer:**
 
 1. useradd -G wheel wheel10
-2. id wheel10   # verify group membership
+2. id wheel10 # verify group membership
 
 **Explanation**
 
 The `wheel` group already has a sudo rule in `/etc/sudoers` on RHEL; adding the user grants them full sudo.
-
 
 **Question 20**
 
@@ -427,13 +408,12 @@ Overall explanation
 **Correct Answer:**
 
 1. mkdir -p /srv/secure10
-2. semanage fcontext -a -t samba_share_t "/srv/secure10(/.*)?"
+2. semanage fcontext -a -t samba_share_t "/srv/secure10(/.\*)?"
 3. restorecon -Rv /srv/secure10
 
 **Explanation**
 
 `semanage fcontext -a` records the labeling rule persistently; `restorecon` applies it. Unlike `chcon`, it survives a full relabel.
-
 
 **Question 21**
 
@@ -448,14 +428,13 @@ Overall explanation
 **Correct Answer:**
 
 1. mkdir -p /var/log/journal
-2. sed -i 's/^#\?Storage=.*/Storage=persistent/' /etc/systemd/journald.conf
-3. sed -i 's/^#\?SystemMaxUse=.*/SystemMaxUse=500M/' /etc/systemd/journald.conf
+2. sed -i 's/^#\?Storage=.\*/Storage=persistent/' /etc/systemd/journald.conf
+3. sed -i 's/^#\?SystemMaxUse=.\*/SystemMaxUse=500M/' /etc/systemd/journald.conf
 4. systemctl restart systemd-journald
 
 **Explanation**
 
 `Storage=persistent` keeps logs; `SystemMaxUse=500M` caps their disk usage.
-
 
 **Question 22**
 
@@ -471,12 +450,11 @@ Overall explanation
 
 1. useradd carol
 2. crontab -u carol -e
-    1. */10 * * * * date >> /home/carol/log.txt
+   1. _/10 _ \* \* \* date >> /home/carol/log.txt
 
 **Explanation**
 
 `*/10` in the minute field runs the job every 10 minutes as user `carol`.
-
 
 **Question 23**
 
@@ -497,7 +475,6 @@ Overall explanation
 **Explanation**
 
 User and group ACL entries provide fine-grained access beyond the standard permission bits.
-
 
 **Question 24**
 
@@ -520,7 +497,6 @@ Then `chmod +x`.
 
 `(( $1 % 2 == 0 ))` evaluates the remainder; an even number yields zero.
 
-
 **Question 25**
 
 **Task:** On **Server10**, count how many lines in `/etc/passwd` use `/sbin/nologin` and write the number to `/root/nologin10.txt`.
@@ -538,7 +514,6 @@ Overall explanation
 **Explanation**
 
 `grep -c` prints the count of matching lines instead of the lines themselves.
-
 
 **Question 26**
 
@@ -559,7 +534,6 @@ Overall explanation
 
 `set-default` chooses text mode; `hostnamectl set-hostname` persists the static hostname in `/etc/hostname`.
 
-
 **Question 27**
 
 **Task:** On **Server10**, add TCP port **9090** to the SELinux `http_port_t` type and open it in the firewall permanently.
@@ -579,7 +553,6 @@ Overall explanation
 
 The SELinux port label authorizes the httpd domain to bind 9090; the firewall must also allow the port.
 
-
 **Question 28**
 
 **Task:** On **Server10**, set the system-wide default **umask** to `077` via a file in `/etc/profile.d/`.
@@ -597,7 +570,6 @@ Overall explanation
 **Explanation**
 
 Scripts in `/etc/profile.d/` are sourced at login, applying the umask for all interactive users.
-
 
 **Question 29**
 
@@ -617,7 +589,6 @@ Overall explanation
 **Explanation**
 
 A hard link shares the target's inode; a symbolic link (`-s`) is a separate file pointing at the path.
-
 
 **Question 30**
 

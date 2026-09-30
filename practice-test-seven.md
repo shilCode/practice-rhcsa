@@ -15,17 +15,16 @@ Overall explanation
 1. Reboot; at the GRUB menu highlight the default entry and press **e**.
 2. On the `linux` line, append `rd.break` (or `init=/bin/bash`), then press **Ctrl+X** to boot.
 3. Remount sysroot writable and chroot:
-    1. mount -o remount,rw /sysroot
-    2. chroot /sysroot
+   1. mount -o remount,rw /sysroot
+   2. chroot /sysroot
 4. Set the password and force SELinux relabel:
-    1. passwd root
-    2. touch /.autorelabel
+   1. passwd root
+   2. touch /.autorelabel
 5. Exit twice and let the system relabel and reboot.
 
 **Explanation**
 
 `rd.break` stops in the initramfs before the real root is mounted normally; `/sysroot` is the real root and must be remounted `rw` before `passwd` can update `/etc/shadow`. `/.autorelabel` fixes SELinux contexts so login works after the offline change.
-
 
 **Question 2**
 
@@ -40,25 +39,24 @@ Overall explanation
 **Correct Answer:**
 
 1. Persistently mount the ISO:
-    1. echo "/RHEL-10.iso /mnt/iso iso9660 loop 0 0" >> /etc/fstab
-    2. mkdir -p /mnt/iso && mount -a
+   1. echo "/RHEL-10.iso /mnt/iso iso9660 loop 0 0" >> /etc/fstab
+   2. mkdir -p /mnt/iso && mount -a
 2. Create `/etc/yum.repos.d/local.repo`:
-    1. [BaseOS]
-    2. name=BaseOS
-    3. baseurl=file:///mnt/iso/BaseOS
-    4. enabled=1
-    5. gpgcheck=0
-    6. [AppStream]
-    7. name=AppStream
-    8. baseurl=file:///mnt/iso/AppStream
-    9. enabled=1
-    10. gpgcheck=0
+   1. [BaseOS]
+   2. name=BaseOS
+   3. baseurl=file:///mnt/iso/BaseOS
+   4. enabled=1
+   5. gpgcheck=0
+   6. [AppStream]
+   7. name=AppStream
+   8. baseurl=file:///mnt/iso/AppStream
+   9. enabled=1
+   10. gpgcheck=0
 3. Verify: `dnf clean all && dnf repolist`.
 
 **Explanation**
 
 `file://` URLs point DNF at a locally mounted tree; `gpgcheck=0` avoids key errors for an offline repo. Adding the mount to `/etc/fstab` makes the repo survive a reboot.
-
 
 **Question 3**
 
@@ -87,7 +85,6 @@ Overall explanation
 
 `ipv4.method manual` / `ipv6.method manual` disable DHCP/SLAAC. The leading `+` on `+ipv4.addresses` **appends** the secondary address instead of overwriting the primary. The profile (not a runtime `ip addr add`) is what persists across reboots.
 
-
 **Question 4**
 
 **Task:** On **Server7**, set the timezone to **Asia/Tokyo** and configure `chrony` to keep time synchronized using `pool.ntp.org`.
@@ -109,7 +106,6 @@ Overall explanation
 
 `timedatectl` writes the timezone symlink; `chronyd` (enabled so it survives reboot) synchronizes the clock against the configured NTP pool.
 
-
 **Question 5**
 
 **Task:** On **Server7**, add the **Flathub** remote and install the **org.gnome.Calculator** Flatpak application system-wide.
@@ -128,7 +124,6 @@ Overall explanation
 **Explanation**
 
 `remote-add --if-not-exists` registers the Flathub repository; installing by application ID pulls the app and its runtime.
-
 
 **Question 6**
 
@@ -154,7 +149,6 @@ Overall explanation
 
 The PV→VG→LV chain provides flexible storage; the `/etc/fstab` entry makes the mount persistent. Always test with `mount -a` before rebooting.
 
-
 **Question 7**
 
 **Task:** On **Server7**, create a systemd **timer** named `backup7` that runs `/usr/local/bin/backup7.sh` daily. Enable the timer.
@@ -169,19 +163,18 @@ Overall explanation
 
 1. Create `/usr/local/bin/backup7.sh` (executable).
 2. `/etc/systemd/system/backup7.service`:
-    1. [Service]
-    2. ExecStart=/usr/local/bin/backup7.sh
+   1. [Service]
+   2. ExecStart=/usr/local/bin/backup7.sh
 3. `/etc/systemd/system/backup7.timer`:
-    1. [Timer]
-    2. OnCalendar=daily
-    3. [Install]
-    4. WantedBy=timers.target
+   1. [Timer]
+   2. OnCalendar=daily
+   3. [Install]
+   4. WantedBy=timers.target
 4. systemctl daemon-reload && systemctl enable --now backup7.timer
 
 **Explanation**
 
 A `.timer` triggers its matching `.service`. `OnCalendar=daily` fires at midnight; enabling ties it to `timers.target` so it starts at boot.
-
 
 **Question 8**
 
@@ -204,7 +197,6 @@ Overall explanation
 
 `--permanent` writes the rule to disk; `--reload` applies it. Enabling `httpd` ensures it starts at boot.
 
-
 **Question 9**
 
 **Task:** On **Server7**, find all files under `/usr` larger than **50 MiB** and copy them into `/root/large7/`.
@@ -224,7 +216,6 @@ Overall explanation
 
 `-size +50M` matches files strictly larger than 50 MiB; `-exec ... {} \;` runs the copy per match.
 
-
 **Question 10**
 
 **Task:** On **Server7**, remove the `rhgb` and `quiet` parameters from the default kernel command line so boot messages are visible.
@@ -238,12 +229,11 @@ Overall explanation
 **Correct Answer:**
 
 1. grubby --update-kernel=ALL --remove-args="rhgb quiet"
-2. grubby --info=DEFAULT   # verify
+2. grubby --info=DEFAULT # verify
 
 **Explanation**
 
 `grubby` edits the persisted kernel arguments directly. Removing `rhgb quiet` exposes verbose boot output.
-
 
 **Question 11**
 
@@ -266,7 +256,6 @@ Then `chmod +x /usr/local/bin/greet7.sh`.
 
 `$1` is the first positional parameter. The script must be executable to run directly.
 
-
 **Question 12**
 
 **Task:** On **Server7**, configure user account policy: add `/etc/skel/README7.txt`, set `PASS_MAX_DAYS` to **45**, and set password `minlen` to **10**.
@@ -280,13 +269,12 @@ Overall explanation
 **Correct Answer:**
 
 1. echo "Welcome" > /etc/skel/README7.txt
-2. sed -i 's/^PASS_MAX_DAYS.*/PASS_MAX_DAYS 45/' /etc/login.defs
+2. sed -i 's/^PASS_MAX_DAYS.\*/PASS_MAX_DAYS 45/' /etc/login.defs
 3. echo "minlen = 10" >> /etc/security/pwquality.conf
 
 **Explanation**
 
 `/etc/skel` seeds new home directories; `login.defs` sets aging defaults; `pwquality.conf` enforces password complexity.
-
 
 **Question 13**
 
@@ -309,7 +297,6 @@ Overall explanation
 
 The SGID bit (`2` in `2770`) makes new files inherit the directory's group, enabling group collaboration.
 
-
 **Question 14**
 
 **Task:** On **Server7**, create a gzip-compressed tar archive `/root/ssh7.tar.gz` containing `/etc/ssh`.
@@ -327,7 +314,6 @@ Overall explanation
 **Explanation**
 
 `c` create, `z` gzip, `f` file. Verify with `tar tf /root/ssh7.tar.gz`.
-
 
 **Question 15**
 
@@ -350,7 +336,6 @@ Overall explanation
 
 `mkswap` formats the device as swap; the `fstab` entry with `swapon -a` activates it persistently.
 
-
 **Question 16**
 
 **Task:** On **Server7**, harden SSH by disabling **password authentication**.
@@ -365,12 +350,11 @@ Overall explanation
 
 1. echo "PasswordAuthentication no" > /etc/ssh/sshd_config.d/99-hardening.conf
 2. systemctl reload sshd
-3. sshd -T | grep passwordauthentication   # verify
+3. sshd -T | grep passwordauthentication # verify
 
 **Explanation**
 
 Drop-in files in `sshd_config.d/` override the main config cleanly; `sshd -T` prints the effective runtime configuration.
-
 
 **Question 17**
 
@@ -387,12 +371,11 @@ Overall explanation
 1. dnf install -y tuned
 2. systemctl enable --now tuned
 3. tuned-adm profile balanced
-4. tuned-adm active   # verify
+4. tuned-adm active # verify
 
 **Explanation**
 
 `tuned-adm profile` selects a persistent performance profile managed by the `tuned` daemon.
-
 
 **Question 18**
 
@@ -415,7 +398,6 @@ Overall explanation
 
 The master map ties `/shares` to a map file; autofs mounts subdirectories on demand and unmounts them when idle.
 
-
 **Question 19**
 
 **Task:** On **Server7**, create user `devon` and grant a sudo rule allowing `devon` to run `dnf` with **NOPASSWD**.
@@ -430,12 +412,11 @@ Overall explanation
 
 1. useradd devon
 2. echo "devon ALL=(ALL) NOPASSWD: /usr/bin/dnf" > /etc/sudoers.d/devon
-3. visudo -cf /etc/sudoers.d/devon   # validate syntax
+3. visudo -cf /etc/sudoers.d/devon # validate syntax
 
 **Explanation**
 
 Drop-in files under `/etc/sudoers.d/` are included by the main sudoers; `NOPASSWD` skips the password prompt for the listed command only.
-
 
 **Question 20**
 
@@ -459,7 +440,6 @@ Overall explanation
 
 A VDO LV provides transparent deduplication and compression; `-V` sets the virtual (provisioned) size larger than the physical backing.
 
-
 **Question 21**
 
 **Task:** On **Server7**, make the systemd journal **persistent** across reboots.
@@ -473,13 +453,12 @@ Overall explanation
 **Correct Answer:**
 
 1. mkdir -p /var/log/journal
-2. sed -i 's/^#\?Storage=.*/Storage=persistent/' /etc/systemd/journald.conf
+2. sed -i 's/^#\?Storage=.\*/Storage=persistent/' /etc/systemd/journald.conf
 3. systemctl restart systemd-journald
 
 **Explanation**
 
 Creating `/var/log/journal` and setting `Storage=persistent` keeps logs across reboots instead of the default volatile `/run`.
-
 
 **Question 22**
 
@@ -500,7 +479,6 @@ Overall explanation
 
 `$!` is the PID of the last background job; `renice` adjusts its priority. (Transient — verified live, not after reboot.)
 
-
 **Question 23**
 
 **Task:** On **Server7**, copy `/etc/fstab` to `/var/tmp/fstab7` and grant user `grace` **read/write** access via an ACL.
@@ -515,12 +493,11 @@ Overall explanation
 
 1. cp /etc/fstab /var/tmp/fstab7
 2. setfacl -m u:grace:rw /var/tmp/fstab7
-3. getfacl /var/tmp/fstab7   # verify
+3. getfacl /var/tmp/fstab7 # verify
 
 **Explanation**
 
 `setfacl -m u:grace:rw` adds a per-user ACL entry beyond the standard owner/group/other permissions.
-
 
 **Question 24**
 
@@ -536,7 +513,7 @@ Overall explanation
 
 1. #!/bin/bash
 2. while IFS=: read -r user _ uid _; do
-3.   echo "$user $uid"
+3. echo "$user $uid"
 4. done < /etc/passwd
 
 Then `chmod +x`.
@@ -544,7 +521,6 @@ Then `chmod +x`.
 **Explanation**
 
 `IFS=:` splits each line on colons; the loop reads the username and UID fields directly from `/etc/passwd`.
-
 
 **Question 25**
 
@@ -564,7 +540,6 @@ Overall explanation
 
 `grep` filters matching lines; `>` redirects them into the target file.
 
-
 **Question 26**
 
 **Task:** On **Server7**, set the default systemd target to **multi-user** (text mode).
@@ -582,7 +557,6 @@ Overall explanation
 **Explanation**
 
 `set-default` re-points the `default.target` symlink so the system boots to the chosen target.
-
 
 **Question 27**
 
@@ -605,7 +579,6 @@ Overall explanation
 
 A confined service can only bind ports carrying the right SELinux type; `semanage port -a` authorizes `8707` for `http_port_t`, and the firewall must also allow it.
 
-
 **Question 28**
 
 **Task:** On **Server7**, ensure user `harper`'s default **umask** is `027`.
@@ -623,7 +596,6 @@ Overall explanation
 **Explanation**
 
 A `027` umask yields `750` directories / `640` files, restricting group-write and all "other" access for that user.
-
 
 **Question 29**
 
@@ -643,7 +615,6 @@ Overall explanation
 
 `scp` transfers files over SSH. (Transient — depends on the remote host being reachable; not verified after reboot.)
 
-
 **Question 30**
 
 **Task:** On **Server7**, create an executable script `/usr/local/bin/checkfile7.sh` that takes a filename argument and prints `exists` if it is a regular file, otherwise `missing`.
@@ -658,9 +629,9 @@ Overall explanation
 
 1. #!/bin/bash
 2. if [ -f "$1" ]; then
-3.   echo "exists"
+3. echo "exists"
 4. else
-5.   echo "missing"
+5. echo "missing"
 6. fi
 
 Then `chmod +x`.

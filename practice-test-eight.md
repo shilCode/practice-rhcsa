@@ -23,7 +23,6 @@ Overall explanation
 
 `/sysroot` must be writable before `passwd` can edit `/etc/shadow`; `/.autorelabel` restores SELinux contexts after the offline change.
 
-
 **Question 2**
 
 **Task:** Configure **Server8** to use HTTP repositories: **BaseOS** at `http://192.168.8.1/rhel10/BaseOS` and **AppStream** at `http://192.168.8.1/rhel10/AppStream`, with GPG checking disabled.
@@ -37,6 +36,7 @@ Overall explanation
 **Correct Answer:**
 
 Create `/etc/yum.repos.d/http.repo`:
+
 1. [BaseOS]
 2. name=BaseOS
 3. baseurl=http://192.168.8.1/rhel10/BaseOS
@@ -53,7 +53,6 @@ Then `dnf clean all && dnf repolist`.
 **Explanation**
 
 HTTP `baseurl`s let DNF pull packages from a network server; `gpgcheck=0` avoids signature errors when no key is imported.
-
 
 **Question 3**
 
@@ -81,7 +80,6 @@ Overall explanation
 
 The `+` prefix appends the secondary address; `manual` methods disable automatic addressing so the static values persist.
 
-
 **Question 4**
 
 **Task:** On **Server8**, set the timezone to **Europe/Paris** and enable `chronyd` for time sync.
@@ -101,7 +99,6 @@ Overall explanation
 
 `timedatectl` persists the timezone; `chronyd` maintains synchronization and starts at boot when enabled.
 
-
 **Question 5**
 
 **Task:** On **Server8**, add the **Flathub** remote and install **org.gnome.TextEditor**.
@@ -120,7 +117,6 @@ Overall explanation
 **Explanation**
 
 Flatpak apps are installed by reverse-DNS ID from a registered remote such as Flathub.
-
 
 **Question 6**
 
@@ -145,7 +141,6 @@ Overall explanation
 
 The fstab entry makes the mount survive reboot; `mount -a` validates it immediately.
 
-
 **Question 7**
 
 **Task:** On **Server8**, create a **cron** job (in `/etc/cron.d/backup8`) that runs `/usr/local/bin/backup8.sh` every day at **02:30** as `root`.
@@ -159,12 +154,11 @@ Overall explanation
 **Correct Answer:**
 
 1. Create `/usr/local/bin/backup8.sh` (executable).
-2. echo "30 2 * * * root /usr/local/bin/backup8.sh" > /etc/cron.d/backup8
+2. echo "30 2 \* \* \* root /usr/local/bin/backup8.sh" > /etc/cron.d/backup8
 
 **Explanation**
 
 Files in `/etc/cron.d/` use **six** fields — the sixth (`root`) is the user the job runs as. `30 2 * * *` means 02:30 daily.
-
 
 **Question 8**
 
@@ -187,7 +181,6 @@ Overall explanation
 
 `--permanent` persists the firewall rule; enabling the unit starts httpd at boot.
 
-
 **Question 9**
 
 **Task:** On **Server8**, find all files under `/home` owned by user `bob` and copy them into `/root/bobfiles8/`.
@@ -207,7 +200,6 @@ Overall explanation
 
 `-user bob` matches files owned by that user; `-exec` copies each match.
 
-
 **Question 10**
 
 **Task:** On **Server8**, set the GRUB menu **timeout** to **5** seconds and regenerate the configuration.
@@ -220,13 +212,12 @@ Overall explanation
 
 **Correct Answer:**
 
-1. sed -i 's/^GRUB_TIMEOUT=.*/GRUB_TIMEOUT=5/' /etc/default/grub
+1. sed -i 's/^GRUB_TIMEOUT=.\*/GRUB_TIMEOUT=5/' /etc/default/grub
 2. grub2-mkconfig -o /boot/grub2/grub.cfg
 
 **Explanation**
 
 `GRUB_TIMEOUT` in `/etc/default/grub` sets the menu delay; `grub2-mkconfig` writes the effective config.
-
 
 **Question 11**
 
@@ -249,7 +240,6 @@ Then `chmod +x`.
 
 `$(( ))` performs integer arithmetic on the two positional parameters.
 
-
 **Question 12**
 
 **Task:** On **Server8**, add `/etc/skel/NOTES8.txt`, set `PASS_MAX_DAYS` to **30**, and password `minlen` to **12**.
@@ -263,13 +253,12 @@ Overall explanation
 **Correct Answer:**
 
 1. echo "notes" > /etc/skel/NOTES8.txt
-2. sed -i 's/^PASS_MAX_DAYS.*/PASS_MAX_DAYS 30/' /etc/login.defs
+2. sed -i 's/^PASS_MAX_DAYS.\*/PASS_MAX_DAYS 30/' /etc/login.defs
 3. echo "minlen = 12" >> /etc/security/pwquality.conf
 
 **Explanation**
 
 `/etc/skel` seeds new homes; `login.defs` and `pwquality.conf` enforce aging and complexity.
-
 
 **Question 13**
 
@@ -292,7 +281,6 @@ Overall explanation
 
 SGID makes new files inherit the `ops8` group so team members can collaborate.
 
-
 **Question 14**
 
 **Task:** On **Server8**, create a **bzip2** archive `/root/repos8.tar.bz2` of `/etc/yum.repos.d`.
@@ -310,7 +298,6 @@ Overall explanation
 **Explanation**
 
 `j` selects bzip2 compression. Verify with `file /root/repos8.tar.bz2`.
-
 
 **Question 15**
 
@@ -333,7 +320,6 @@ Overall explanation
 
 `mkswap` + fstab + `swapon -a` provides persistent additional swap.
 
-
 **Question 16**
 
 **Task:** On **Server8**, configure SSH to **deny root login**.
@@ -352,7 +338,6 @@ Overall explanation
 **Explanation**
 
 A drop-in with `PermitRootLogin no` blocks direct root SSH access; `sshd -T` confirms the effective value.
-
 
 **Question 17**
 
@@ -373,7 +358,6 @@ Overall explanation
 
 `tuned-adm profile powersave` persistently selects the low-power profile.
 
-
 **Question 18**
 
 **Task:** On **Server8**, mount the NFS export `server:/exports/data8` persistently at `/mnt/nfs8` using the `_netdev` option.
@@ -388,13 +372,12 @@ Overall explanation
 
 1. dnf install -y nfs-utils
 2. mkdir -p /mnt/nfs8
-3. echo "server:/exports/data8 /mnt/nfs8 nfs _netdev 0 0" >> /etc/fstab
+3. echo "server:/exports/data8 /mnt/nfs8 nfs \_netdev 0 0" >> /etc/fstab
 4. mount -a
 
 **Explanation**
 
 `_netdev` delays the mount until networking is up, preventing boot hangs on network filesystems.
-
 
 **Question 19**
 
@@ -416,7 +399,6 @@ Overall explanation
 **Explanation**
 
 The `%` prefix denotes a group rule; members of `admin8` gain full sudo privileges.
-
 
 **Question 20**
 
@@ -440,7 +422,6 @@ Overall explanation
 
 Thin volumes provision space on demand; the virtual size (`-V 2G`) can exceed the pool's physical size.
 
-
 **Question 21**
 
 **Task:** On **Server8**, make the journal persistent and cap its size at **200M**.
@@ -454,14 +435,13 @@ Overall explanation
 **Correct Answer:**
 
 1. mkdir -p /var/log/journal
-2. sed -i 's/^#\?Storage=.*/Storage=persistent/' /etc/systemd/journald.conf
-3. sed -i 's/^#\?SystemMaxUse=.*/SystemMaxUse=200M/' /etc/systemd/journald.conf
+2. sed -i 's/^#\?Storage=.\*/Storage=persistent/' /etc/systemd/journald.conf
+3. sed -i 's/^#\?SystemMaxUse=.\*/SystemMaxUse=200M/' /etc/systemd/journald.conf
 4. systemctl restart systemd-journald
 
 **Explanation**
 
 `Storage=persistent` keeps logs across reboots; `SystemMaxUse=200M` limits their disk usage.
-
 
 **Question 22**
 
@@ -477,12 +457,11 @@ Overall explanation
 
 1. systemctl enable --now atd
 2. echo '/usr/bin/logger "at8 ran"' | at now + 5 minutes
-3. atq   # verify
+3. atq # verify
 
 **Explanation**
 
 `at` reads the command from stdin and queues a single execution; `atq` lists pending jobs.
-
 
 **Question 23**
 
@@ -503,7 +482,6 @@ Overall explanation
 **Explanation**
 
 Per-user ACL entries override the group/other bits: `quinn` gets rw, `sam` is explicitly denied.
-
 
 **Question 24**
 
@@ -526,7 +504,6 @@ Then `chmod +x`.
 
 `$#` expands to the count of positional parameters passed to the script.
 
-
 **Question 25**
 
 **Task:** On **Server8**, extract all lines containing `bash` from `/etc/passwd` into `/root/bashusers8.txt`.
@@ -544,7 +521,6 @@ Overall explanation
 **Explanation**
 
 `grep` filters lines containing `bash` (users with a bash login shell); `>` writes them to the file.
-
 
 **Question 26**
 
@@ -564,7 +540,6 @@ Overall explanation
 
 `set-default` re-points `default.target`; the graphical target pulls in multi-user plus the display manager.
 
-
 **Question 27**
 
 **Task:** On **Server8**, create `/web8`, give it a persistent SELinux type of `httpd_sys_content_t`, and enable the SELinux boolean `httpd_can_network_connect`.
@@ -578,14 +553,13 @@ Overall explanation
 **Correct Answer:**
 
 1. mkdir /web8
-2. semanage fcontext -a -t httpd_sys_content_t "/web8(/.*)?"
+2. semanage fcontext -a -t httpd_sys_content_t "/web8(/.\*)?"
 3. restorecon -Rv /web8
 4. setsebool -P httpd_can_network_connect on
 
 **Explanation**
 
 `semanage fcontext` + `restorecon` persistently labels the directory; `setsebool -P` persistently toggles the boolean.
-
 
 **Question 28**
 
@@ -604,7 +578,6 @@ Overall explanation
 **Explanation**
 
 A `077` umask makes new files/dirs accessible only to the owner.
-
 
 **Question 29**
 
@@ -625,7 +598,6 @@ Overall explanation
 
 `-a` (archive) preserves permissions, ownership, and timestamps while recursively copying. (Content check is transient.)
 
-
 **Question 30**
 
 **Task:** On **Server8**, create an executable script `/usr/local/bin/checkuser8.sh` that prints `present` if the username argument exists in `/etc/passwd`, else `absent`.
@@ -640,9 +612,9 @@ Overall explanation
 
 1. #!/bin/bash
 2. if id "$1" &>/dev/null; then
-3.   echo "present"
+3. echo "present"
 4. else
-5.   echo "absent"
+5. echo "absent"
 6. fi
 
 Then `chmod +x`.
