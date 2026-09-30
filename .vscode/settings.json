@@ -1,0 +1,8 @@
+{
+  "chat.tools.terminal.autoApprove": {
+    "/^bash -c 'cd /mnt/c/Users/PLMOSHI/Downloads/practice-rh-exam/practice-rh-exam && file rhcsa-validator\\.sh && head -c 200 rhcsa-validator\\.sh \\| cat -A \\| head -5'$/": {
+      "approve": true,
+      "matchCommandLine": true
+    }
+  }
+}
